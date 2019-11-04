@@ -668,7 +668,8 @@ else:
         pcl_libs = ["2d", "common", "features", "filters", "geometry",
                     "io", "kdtree", "keypoints", "ml", "octree", "outofcore", "people",
                     "recognition", "registration", "sample_consensus", "search",
-                    "segmentation", "stereo", "surface", "tracking", "visualization"]
+                    "segmentation", "stereo", "tracking"]
+                #    "segmentation", "stereo", "surface", "tracking", "visualization"]
     pcl_libs = ["pcl_%s%s" % (lib, pcl_version) for lib in pcl_libs]
 
     ext_args = defaultdict(list)
@@ -681,13 +682,16 @@ else:
     # "-I/usr/include/openni"
     # "-I/usr/include/openni"
     # /usr/include/ni
-    ext_args['include_dirs'].append('/usr/include/ni')
+    #ext_args['include_dirs'].append('/usr/include/ni') #MEH
     # ext_args['library_dirs'].append()
     # ext_args['libraries'].append()
     # OpenNI2
-    ext_args['include_dirs'].append('/usr/include/openni2')
+    #ext_args['include_dirs'].append('/usr/include/openni2') #MEH
 
     # VTK use
+    vtk_include_dir = None
+    vtk_library_dir = None
+    vtk_version = None
     if sys.platform == 'darwin':
         # pcl 1.8.1(MacOSX)
         # if pcl_version == '-1.8':
@@ -707,9 +711,10 @@ else:
             # vtk_version = '8.1.2_3'
             # vtk_include_dir = os.path.join('/usr/local/Cellar/vtk', vtk_version ,'include/vtk-8.2')
             # 2019/05/08 check(pcl 1.9.1_4)
-            vtk_version = '8.2.0'
-            vtk_include_dir = os.path.join('/usr/local/Cellar/vtk', vtk_version ,'include/vtk-8.2')
-            vtk_library_dir = os.path.join('/usr/local/Cellar/vtk', vtk_version, 'lib')
+            # vtk_version = '8.2.0' #Meh
+            # vtk_include_dir = os.path.join('/usr/local/Cellar/vtk', vtk_version ,'include/vtk-8.2') #Meh
+            # vtk_library_dir = os.path.join('/usr/local/Cellar/vtk', vtk_version, 'lib') #Meh
+            pass
         pass
     else:
         # pcl 1.7.0?(Ubuntu 14.04)
@@ -723,17 +728,19 @@ else:
             vtk_library_dir = os.path.join('/usr/lib')
         elif pcl_version == '-1.8':
             # pcl 1.8.0/1?(Ubuntu 18.04)(melodic)
-            vtk_version = '7.0'
+            #vtk_version = '7.0' #MEH
             # pcl 1.8.1?
             # vtk_version = '8.0'
-            vtk_include_dir = os.path.join('/usr/include/vtk-' + vtk_version)
-            vtk_library_dir = os.path.join('/usr/lib')
+            #vtk_include_dir = os.path.join('/usr/include/vtk-' + vtk_version) #MEH
+            #vtk_library_dir = os.path.join('/usr/lib') #MEH
+            pass #Meh
         elif pcl_version == '-1.9':
             # pcl 1.9.1
             # build install?
-            vtk_version = '8.1'
-            vtk_include_dir = os.path.join('/usr/include/vtk-' + vtk_version)
-            vtk_library_dir = os.path.join('/usr/lib')
+            # vtk_version = '8.1' #Meh
+            # vtk_include_dir = os.path.join('/usr/include/vtk-' + vtk_version) #Meh
+            # vtk_library_dir = os.path.join('/usr/lib') #Meh
+            pass #Meh
         else:
             pass
 
@@ -743,8 +750,9 @@ else:
     # vtk_include_dir = os.path.join(os.environ["PREFIX"] ,'include/vtk-8.1')
     # vtk_library_dir = os.path.join(os.environ["PREFIX"], 'lib')
 
-    ext_args['include_dirs'].append(vtk_include_dir)
-    ext_args['library_dirs'].append(vtk_library_dir)
+    if not(vtk_include_dir is None):
+        ext_args['include_dirs'].append(vtk_include_dir)
+        ext_args['library_dirs'].append(vtk_library_dir)
 
     if vtk_version == '5.8':
         vtklibreleases = ['vtkInfovis', 'MapReduceMPI', 'vtkNetCDF', 'QVTK', 'vtkNetCDF_cxx', 'vtkRendering', 'vtkViews', 'vtkVolumeRendering', 'vtkWidgets', 'mpistubs', 'vtkalglib', 'vtkCharts', 'vtkexoIIc', 'vtkexpat', 'vtkCommon', 'vtkfreetype', 'vtkDICOMParser', 'vtkftgl', 'vtkFiltering', 'vtkhdf5', 'vtkjpeg', 'vtkGenericFiltering', 'vtklibxml2', 'vtkGeovis', 'vtkmetaio', 'vtkpng', 'vtkGraphics', 'vtkproj4', 'vtkHybrid', 'vtksqlite', 'vtksys', 'vtkIO', 'vtktiff', 'vtkImaging', 'vtkverdict', 'vtkzlib']
@@ -799,7 +807,7 @@ else:
         pass
     else:
         ext_args['extra_compile_args'].append("-std=c++11")
-        ext_args['library_dirs'].append("/usr/lib/x86_64-linux-gnu/")
+        # ext_args['library_dirs'].append("/usr/lib/x86_64-linux-gnu/") #Meh
         # gcc? use standard library
         # ext_args['extra_compile_args'].append("-stdlib=libstdc++")
         # ext_args['extra_link_args'].append("-stdlib=libstdc++")
@@ -852,14 +860,15 @@ else:
                   ]
     elif pcl_version == '-1.8':
         module = [Extension("pcl._pcl", ["pcl/_pcl_180.pyx", "pcl/minipcl.cpp", "pcl/ProjectInliers.cpp"], language="c++", **ext_args),
-                  Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args),
+                  # Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args), #Meh!!
                   # Extension("pcl.pcl_grabber", ["pcl/pcl_grabber.pyx", "pcl/grabber_callback.cpp"], language="c++", **ext_args),
                   # debug
                   # gdb_debug=True,
                   ]
     elif pcl_version == '-1.9':
-        module = [Extension("pcl._pcl", ["pcl/_pcl_190.pyx", "pcl/minipcl.cpp", "pcl/ProjectInliers.cpp"], language="c++", **ext_args),
-                  Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args),
+        module = [ Extension("pcl._pcl", ["pcl/_pcl_190.pyx"], language="c++", **ext_args)
+                  # Extension("pcl._pcl", ["pcl/_pcl_190.pyx", "pcl/minipcl.cpp", "pcl/ProjectInliers.cpp"], language="c++", **ext_args), #Meh
+                  # Extension("pcl.pcl_visualization", ["pcl/pcl_visualization.pyx"], language="c++", **ext_args), #Meh!!
                   # Extension("pcl.pcl_grabber", ["pcl/pcl_grabber.pyx", "pcl/grabber_callback.cpp"], language="c++", **ext_args),
                   # debug
                   # gdb_debug=True,
@@ -871,6 +880,9 @@ else:
     listDlls = []
     data_files = None
 
+    ext_args['include_dirs'].append("/home/abian/Workspace/Anaconda/Miniconda3/envs/custom-python-pcl/include")
+    ext_args['include_dirs'].append("/home/abian/Workspace/Anaconda/Miniconda3/envs/custom-python-pcl/include/pcl-1.8/")
+    ext_args['include_dirs'].append("/home/abian/Workspace/Anaconda/Miniconda3/envs/custom-python-pcl/include/eigen3/")
 
 setup(name='python-pcl',
       description='Python bindings for the Point Cloud Library (PCL). using Cython.',
